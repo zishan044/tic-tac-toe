@@ -1,34 +1,52 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
+function Square({value, onSquareClick}) {
+  return (
+    <div className='square' onClick={onSquareClick}>
+      {value}
+    </div>
+  )
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [squares, setSquares] = useState(Array(9).fill(null))
+  const [X, setX] = useState(false)
+
+  const handleClick = (i) => {
+    if(squares[i] !== null || winner != null) {
+      return
+    }
+    const newSquares = squares.slice()
+    newSquares[i] = X ? 'X' : 'O'
+    setSquares(newSquares)
+    setX(!X)
+  }
+
+  const check = () => {
+    const lines = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
+    for (let i=0; i<lines.length; i++) {
+      const[a,b,c] = lines[i]
+      if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a]
+      }
+    }
+    return null
+  }
+
+  const winner = check()
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app">
+      <h1>Tic-Tac-Toe {winner !== null && `Winner: ${winner}`}</h1>
+      <div className='board'>
+      {
+        squares.map((v, i) => (
+          <Square key={i} value={v} onSquareClick={() => handleClick(i)}/>
+        ))
+      }
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
